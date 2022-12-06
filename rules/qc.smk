@@ -14,7 +14,7 @@ rule fastqc:
 
 rule samtools_stats:
     input:
-        outputdir + "recal/{sample}.bam"
+        bam=outputdir + "recal/{sample}.bam"
     output:
         outputdir + "qc/samtools-stats/{sample}.txt"
     log:
@@ -22,7 +22,7 @@ rule samtools_stats:
     benchmark:
         outputdir + "benchmarks/samtools-stats/{sample}.samtools-stats.benchmark.txt"
     wrapper:
-        "0.78.0/bio/samtools/stats"
+        "master/bio/samtools/stats" #0.78.0
 
 rule mosdepth:
     input:
@@ -39,7 +39,7 @@ rule mosdepth:
         outputdir + "benchmarks/mosdepth/{sample}.mosdepth.benchmark.txt"
     threads: config["ncores"]
     wrapper:
-        "0.78.0/bio/mosdepth"
+        "master/bio/mosdepth" #0.78.0
         
 rule multiqc:
     input:
