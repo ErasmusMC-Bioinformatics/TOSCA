@@ -1,6 +1,11 @@
 channels:
   - bioconda
   - conda-forge
+  - nodefaults
 dependencies:
-  - rust-bio-tools =0.9
-  - bcftools =1.10
+  - rust-bio-tools =0.41.0
+  - bcftools
+  - snakemake-wrapper-utils =0.5.0
+
+
+
