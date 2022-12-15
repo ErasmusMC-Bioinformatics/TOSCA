@@ -1,6 +1,5 @@
 # TOSCA workflow <img src="img/tosca_image.png" width="200" align="right" />
 
-
 **TOSCA** (**T**umor **O**nly **S**omatic **CA**lling) is a [Snakemake workflow](https://snakemake.readthedocs.io/en/stable/index.html), aimed at performing a somatic variant calling (without matched normal samples) analysis in a reproducible, automated, and open source workflow.
 
 TOSCA consists of a `Snakefile`, a set of [`conda`](https://conda.io/docs/) environment files (`envs/*.yaml`) a configuration file (`config/config.yaml`) and a set of `R` scripts. It is able to perform an end-to-end analysis, from raw read files, via quality checks, alignment and variant calling, to functional annotation, databases filtering, tumor purity and ploidy estimation and finally variant classification in whole exome / target sequencing data.  

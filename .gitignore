@@ -1,0 +1,4 @@
+.snakemake
+
+resources
+rules/snakemake_cache

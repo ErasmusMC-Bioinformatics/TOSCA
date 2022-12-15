@@ -22,7 +22,7 @@ rule get_annotation:
         fmt="gtf"
     cache: True  # save space and time with between workflow caching (see docs)
     wrapper:
-        "0.78.0/bio/reference/ensembl-annotation"
+        "v1.19.1/bio/reference/ensembl-annotation"
 
 rule gtf:
     input:
@@ -47,31 +47,50 @@ rule genome_dict:
     cache: True
     shell:
         "samtools dict {input} > {output} "
+
+rule star_index:
+    input:
+        fasta=expand("resources/reference_genome/{ref}/{species}.fasta",ref=config["ref"]["build"],species=config["ref"]["species"]),
+	    gtf=expand("resources/reference_genome/{ref}/{species}_annotation.gtf",ref=config["ref"]["build"],species=config["ref"]["species"]),
+    output:
+        directory(expand("resources/reference_genome/{ref}/genomeDir", ref=config["ref"]["build"]))
+    message:
+        "Testing STAR index"
+    threads: config["ncores"]
+    params:
+        extra="",
+    log:
+        outputdir + "logs/star_index/star_index.log"
+    resources:
+        mem_mb=369000
+    cache: True
+    wrapper:
+        "v1.19.0/bio/star/index"
         
 rule bwa_index:
     input:
         expand("resources/reference_genome/{ref}/{species}.fasta",ref=config["ref"]["build"],species=config["ref"]["species"])
     output:
-        expand("resources/reference_genome/{ref}/{species}.fasta.{bwa}",ref=config["ref"]["build"],species=config["ref"]["species"],bwa=["amb", "ann" ,"bwt", "pac", "sa"])
+        expand("resources/reference_genome/{ref}/{species}.fasta.{bwa}", ref=config["ref"]["build"],species=config["ref"]["species"], bwa=["amb", "ann" ,"bwt", "pac", "sa"])	
     params:
         algorithm="bwtsw"
     log:
         outputdir + "logs/bwa_index/bwa_index.log"          
     resources:
         mem_mb=369000
-    cache: True
     wrapper:
         "0.78.0/bio/bwa/index"        
+
 
 rule genome_faidx:
     input:
          expand("resources/reference_genome/{ref}/{species}.fasta",ref=config["ref"]["build"],species=config["ref"]["species"]),
-         expand("resources/reference_genome/{ref}/{species}.fasta.{bwa}",ref=config["ref"]["build"],species=config["ref"]["species"],bwa=["amb", "ann" ,"bwt", "pac", "sa"])
+         expand("resources/reference_genome/{ref}/{species}.fasta",ref=config["ref"]["build"],species=config["ref"]["species"],bwa=["amb", "ann" ,"bwt", "pac", "sa"])
     output:
          expand("resources/reference_genome/{ref}/{species}.fasta.fai",ref=config["ref"]["build"],species=config["ref"]["species"])
     cache: True
     wrapper:
-        "0.78.0/bio/samtools/faidx"
+        "master/bio/samtools/faidx" #0.78.0
 
 rule get_known_variation:
     input:
@@ -86,7 +105,7 @@ rule get_known_variation:
         type="all"
     cache: True
     wrapper:
-        "0.78.0/bio/reference/ensembl-variation"
+        "master/bio/reference/ensembl-variation" #0.78.0
 
 rule remove_iupac_codes:
     input:
@@ -108,7 +127,7 @@ rule tabix_known_variants:
         "-p vcf"
     cache: True
     wrapper:
-        "0.78.0/bio/tabix"   
+        "master/bio/tabix/index" #0.78.0 and no index  
 
 rule snpeff_download:
     output:

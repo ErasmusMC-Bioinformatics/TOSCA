@@ -28,7 +28,7 @@ rule snpsift_annotate_1000G:
     benchmark:
         outputdir + "benchmarks/1000G/{sample}.1000G.benchmark.txt"    
     wrapper:
-        "0.78.0/bio/snpsift/annotate"
+        "master/bio/snpsift/annotate" #0.78.0
 
 rule snpsift_annotate_ESP:
     input:
@@ -42,7 +42,7 @@ rule snpsift_annotate_ESP:
     benchmark:
         outputdir + "benchmarks/ESP/{sample}.ESP.benchmark.txt"     
     wrapper:
-        "0.78.0/bio/snpsift/annotate"
+        "master/bio/snpsift/annotate" #0.78.0
 
 rule snpsift_annotate_ExAC:
     input:
@@ -55,7 +55,7 @@ rule snpsift_annotate_ExAC:
     benchmark:
         outputdir + "benchmarks/ExAC/{sample}.ExAC.benchmark.txt"    
     wrapper:
-        "0.78.0/bio/snpsift/annotate"
+        "master/bio/snpsift/annotate" #0.78.0
 
 rule snpsift_annotate_dbSNP:
     input:
@@ -68,7 +68,7 @@ rule snpsift_annotate_dbSNP:
     benchmark:
         outputdir + "benchmarks/dbSNP/{sample}.dbSNP.benchmark.txt"     
     wrapper:
-        "0.78.0/bio/snpsift/annotate"
+        "master/bio/snpsift/annotate" #0.78.0
 
 rule Cosmic_annotate:
     input:
@@ -96,7 +96,7 @@ rule snpsift_annotate_ClinVar:
     benchmark:
         outputdir + "benchmarks/ClinVar/{sample}.ClinVar.benchmark.txt"      
     wrapper:
-        "0.78.0/bio/snpsift/annotate"
+        "master/bio/snpsift/annotate" #0.78.0
 
 rule vcf_coverage:
     input:

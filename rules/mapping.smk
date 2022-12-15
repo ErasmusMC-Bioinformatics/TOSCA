@@ -20,22 +20,45 @@ rule trim_reads_pe:
 rule map_reads:
     input:
         reads=get_trimmed_reads,
-        idx=rules.bwa_index.output,
-        fai=rules.genome_faidx.output
+        # path to STAR reference genome index
+        idx=rules.star_index.output
     output:
-        temp(outputdir + "mapped/{sample}.sorted.bam")
+        # see STAR manual for additional output files
+        #aln="star/pe/{sample}/pe_aligned.sam",
+        #log="logs/pe/{sample}/Log.out",
+        #sj="star/pe/{sample}/SJ.out.tab",
+	    temp(outputdir + "mapped/{sample}.sorted.bam")
     log:
-        outputdir + "logs/bwa_mem/{sample}.log"
+        outputdir + "logs/star/{sample}.log"
     benchmark:
-        outputdir + "benchmarks/bwa_mem/{sample}.bwa.benchmark.txt"
+        outputdir + "benchmarks/star/{sample}.star.benchmark.txt"
     params:
-        index=lambda w, input: os.path.splitext(input.idx[0])[0],
-        extra=get_read_group,
-        sorting="samtools",
-        sort_order="coordinate"
+        # optional parameters
+        extra="--twopassMode Basic",
+	    #extra="--outSAMtype BAM SortedByCoordinate",
     threads: config["ncores"]
     wrapper:
-        "0.78.0/bio/bwa/mem"
+        "v1.18.3/bio/star/align"
+
+#rule map_reads:
+ #   input:
+ #       reads=get_trimmed_reads,
+ #      idx=rules.star_index.output,
+ #	fai=rules.genome_faidx.output
+ #  output:
+ #       temp(outputdir + "mapped/{sample}.sorted.bam")
+ #   log:
+ #       outputdir + "logs/bwa_mem/{sample}.log"
+ #   benchmark:
+ #       outputdir + "benchmarks/bwa_mem/{sample}.bwa.benchmark.txt"
+ #   params:
+ #       index=lambda w, input: os.path.splitext(input.idx[0])[0],
+ #       extra=get_read_group,
+ #       sorting="samtools",
+ #       sort_order="coordinate"
+ #   threads: config["ncores"]
+ #   wrapper:
+ #       "master/bio/bwa/mem" #0.78.0
 
 rule mark_duplicates:
     input:
