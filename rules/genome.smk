@@ -61,8 +61,6 @@ rule star_index:
         extra="",
     log:
         outputdir + "logs/star_index/star_index.log"
-    resources:
-        mem_mb=369000
     cache: True
     wrapper:
         "v1.19.0/bio/star/index"
@@ -89,6 +87,7 @@ rule genome_faidx:
     output:
          expand("resources/reference_genome/{ref}/{species}.fasta.fai",ref=config["ref"]["build"],species=config["ref"]["species"])
     cache: True
+    priority: 10
     wrapper:
         "master/bio/samtools/faidx" #0.78.0
 

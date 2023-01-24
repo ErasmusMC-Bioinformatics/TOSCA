@@ -3,7 +3,7 @@
 ############################################
 
 meta: metafile/target_panel/metafile_tosca.txt  #Path to metafile with RAW TUMOR samples (following columns are required: sample,platform,fq1/fq2 (tab separated))          
-output: /data/eveline/tosca_test_star_14_12_22 #Path to the OUTPUT directory 
+output: /data/eveline/tosca_test_star_07_01_23 #Path to the OUTPUT directory 
 
 ############################################
 ## OPTIONAL (HIGHLY recommended for WES)

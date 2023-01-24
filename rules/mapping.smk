@@ -16,29 +16,46 @@ rule trim_reads_pe:
         outputdir + "benchmarks/trimmomatic/{sample}.trim.benchmark.txt"
     wrapper:
         "0.78.0/bio/trimmomatic/pe"
-        
+
 rule map_reads:
     input:
-        reads=get_trimmed_reads,
+        fq1=get_trimmed_reads,
         # path to STAR reference genome index
         idx=rules.star_index.output
     output:
         # see STAR manual for additional output files
-        #aln="star/pe/{sample}/pe_aligned.sam",
-        #log="logs/pe/{sample}/Log.out",
-        #sj="star/pe/{sample}/SJ.out.tab",
-	    temp(outputdir + "mapped/{sample}.sorted.bam")
+        log=outputdir + "logs/star/{sample}/Log.out",
+        sj=outputdir + "star/pe/{sample}/SJ.out.tab",
+	    aln = temp(outputdir + "mapped/{sample}.sorted.bam")
     log:
         outputdir + "logs/star/{sample}.log"
     benchmark:
         outputdir + "benchmarks/star/{sample}.star.benchmark.txt"
     params:
         # optional parameters
-        extra="--twopassMode Basic",
-	    #extra="--outSAMtype BAM SortedByCoordinate",
+        twopass="--twopassMode Basic",
+	    sorted="--outSAMtype BAM SortedByCoordinate",
     threads: config["ncores"]
+    conda:
+        "../envs/staralign.yaml"
+    script:
+        "star.py"
+
+rule add_read_groups:
+    input:
+        outputdir + "mapped/{sample}.sorted.bam",
+    output:
+        temp(outputdir + "mapped/fixed-rg/{sample}.bam"),
+    log:
+        outputdir + "logs/picard/replace_rg/{sample}.log",
+    params:
+        extra="--RGLB lib1 --RGPL illumina --RGPU {sample} --RGSM {sample}",
+    resources:
+        mem_mb=1024,
     wrapper:
-        "v1.18.3/bio/star/align"
+        "master/bio/picard/addorreplacereadgroups"
+
+        
 
 #rule map_reads:
  #   input:
@@ -62,7 +79,7 @@ rule map_reads:
 
 rule mark_duplicates:
     input:
-        outputdir + "mapped/{sample}.sorted.bam"
+        outputdir + "mapped/fixed-rg/{sample}.bam"
     output:
         bam=temp(outputdir + "dedup/{sample}.bam"),
         metrics=outputdir + "qc/dedup/{sample}.metrics.txt"
@@ -76,10 +93,27 @@ rule mark_duplicates:
         mem_mb=4096    
     wrapper:
         "0.78.0/bio/picard/markduplicates"
-        
-rule gatk_baserecalibrator:
+
+rule splitncigarreads:
     input:
         bam=outputdir + "dedup/{sample}.bam",
+        ref=expand("resources/reference_genome/{ref}/{species}.fasta",ref=config["ref"]["build"],species=config["ref"]["species"]),
+    output:
+        temp(outputdir + "split/{sample}.bam"),
+    log:
+        outputdir + "logs/gatk/splitNCIGARreads/{sample}.log",
+    params:
+        extra="",  # optional
+        java_opts="",  # optional
+    resources:
+        mem_mb=1024,
+    wrapper:
+        "master/bio/gatk/splitncigarreads"        
+    
+
+rule gatk_baserecalibrator:
+    input:
+        bam=outputdir + "split/{sample}.bam",
         ref=expand("resources/reference_genome/{ref}/{species}.fasta",ref=config["ref"]["build"],species=config["ref"]["species"]),
         dict=expand("resources/reference_genome/{ref}/{species}.dict",ref=config["ref"]["build"],species=config["ref"]["species"]),
         known=expand("resources/database/{ref}/variation.noiupac.vcf.gz",ref=config["ref"]["build"]),
@@ -95,7 +129,7 @@ rule gatk_baserecalibrator:
 
 rule gatk_applybqsr:
     input:
-        bam=outputdir + "dedup/{sample}.bam",
+        bam=outputdir + "split/{sample}.bam",
         ref=expand("resources/reference_genome/{ref}/{species}.fasta",ref=config["ref"]["build"],species=config["ref"]["species"]),
         dict=expand("resources/reference_genome/{ref}/{species}.dict",ref=config["ref"]["build"],species=config["ref"]["species"]),
         recal_table=outputdir + "recal/{sample}.table"

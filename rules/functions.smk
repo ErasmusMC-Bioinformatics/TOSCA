@@ -35,7 +35,7 @@ def get_trimmed_reads(wildcards):
 
 def get_read_group(wildcards):
     """Denote sample name and platform in read group."""
-    return r"-R '@RG\tID:{sample}\tSM:{sample}\tPL:{platform}'".format(
+    return r"'ID:{sample}     SM:{sample}     PL:{platform}'".format(
         sample=wildcards.sample,
         platform=samples.loc[(wildcards.sample), "platform"])
 
