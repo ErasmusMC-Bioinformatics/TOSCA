@@ -15,7 +15,7 @@ rule trim_reads_pe:
     benchmark:
         outputdir + "benchmarks/trimmomatic/{sample}.trim.benchmark.txt"
     wrapper:
-        "0.78.0/bio/trimmomatic/pe"
+        "v1.23.3/bio/trimmomatic/pe"
 
 rule map_reads:
     input:
@@ -49,37 +49,16 @@ rule add_read_groups:
     log:
         outputdir + "logs/picard/replace_rg/{sample}.log",
     params:
-        extra="--RGLB lib1 --RGPL illumina --RGPU {sample} --RGSM {sample}",
+        extra="--RGLB lib1 --RGPL illumina --RGPU {sample} --RGSM {sample}", """ If it works change too get_read_groups """"
     resources:
         mem_mb=1024,
     wrapper:
         "master/bio/picard/addorreplacereadgroups"
 
-        
-
-#rule map_reads:
- #   input:
- #       reads=get_trimmed_reads,
- #      idx=rules.star_index.output,
- #	fai=rules.genome_faidx.output
- #  output:
- #       temp(outputdir + "mapped/{sample}.sorted.bam")
- #   log:
- #       outputdir + "logs/bwa_mem/{sample}.log"
- #   benchmark:
- #       outputdir + "benchmarks/bwa_mem/{sample}.bwa.benchmark.txt"
- #   params:
- #       index=lambda w, input: os.path.splitext(input.idx[0])[0],
- #       extra=get_read_group,
- #       sorting="samtools",
- #       sort_order="coordinate"
- #   threads: config["ncores"]
- #   wrapper:
- #       "master/bio/bwa/mem" #0.78.0
 
 rule mark_duplicates:
     input:
-        outputdir + "mapped/fixed-rg/{sample}.bam"
+        bams=outputdir + "mapped/fixed-rg/{sample}.bam"
     output:
         bam=temp(outputdir + "dedup/{sample}.bam"),
         metrics=outputdir + "qc/dedup/{sample}.metrics.txt"
@@ -88,11 +67,11 @@ rule mark_duplicates:
     benchmark:
         outputdir + "benchmarks/picard/{sample}.picard.benchmark.txt"
     params:
-        "REMOVE_DUPLICATES=true OPTICAL_DUPLICATE_PIXEL_DISTANCE=100 CREATE_INDEX=true VALIDATION_STRINGENCY=LENIENT"
+        extra="--REMOVE_DUPLICATES=true --OPTICAL_DUPLICATE_PIXEL_DISTANCE=100 --CREATE_INDEX=true --VALIDATION_STRINGENCY=LENIENT"
     resources:
         mem_mb=4096    
     wrapper:
-        "0.78.0/bio/picard/markduplicates"
+        "v1.23.3/bio/picard/markduplicates"
 
 rule splitncigarreads:
     input:

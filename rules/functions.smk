@@ -11,6 +11,9 @@ def getpath(str):
 		str += '/'
 	return str
 
+def get_reference(wildcards):
+    return os.path.join('resources/reference_genome/',config["ref"]["build"], "homo_sapiens.fasta")
+
 ###########################
 
 def get_fastq(wildcards):
@@ -34,8 +37,8 @@ def get_trimmed_reads(wildcards):
     return outputdir + "trimmed/{sample}.fastq.gz".format(**wildcards)
 
 def get_read_group(wildcards):
-    """Denote sample name and platform in read group."""
-    return r"'ID:{sample}     SM:{sample}     PL:{platform}'".format(
+    """Denote sample name and platform in read group.   (Later in return function: --RGLB lib --RGPL {platform} --RGPU {sample} --RGSM {sample}")"""
+    return r"'--RGLB lib --RGPL {platform} --RGPU {sample} --RGSM {sample}'".format(
         sample=wildcards.sample,
         platform=samples.loc[(wildcards.sample), "platform"])
 

@@ -10,7 +10,7 @@ rule fastqc:
     benchmark:
         outputdir + "benchmarks/fastqc/{sample}_{fq}.fastqc.benchmark.txt"
     wrapper:
-        "0.78.0/bio/fastqc"
+        "v1.23.3/bio/fastqc"
 
 rule samtools_stats:
     input:
@@ -56,4 +56,4 @@ rule multiqc:
     benchmark:
         outputdir + "benchmarks/multiqc/multiqc.benchmark.txt"
     wrapper:
-        "0.78.0/bio/multiqc"
+        "v1.23.3/bio/multiqc"

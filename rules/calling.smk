@@ -1,6 +1,6 @@
 rule callable:
     input:
-         ref=expand("resources/reference_genome/{ref}/{species}.fasta",ref=config["ref"]["build"],species=config["ref"]["species"]),
+         ref=get_reference,
          bam=outputdir + "recal/{sample}.bam",
          bed=config["filtering"]["restrict-regions"],
          script = "scripts/callable_filt.R"
@@ -23,7 +23,7 @@ rule callable:
         
 rule mutect2:
     input:
-        ref=expand("resources/reference_genome/{ref}/{species}.fasta",ref=config["ref"]["build"],species=config["ref"]["species"]),
+        ref=get_reference
         bam = outputdir + "recal/{sample}.bam",
         pon= config["database_url"]["GRCh38"]["germline"]["PON"] if config["ref"]["build"]=='GRCh38' else config["database_url"]["GRCh37"]["germline"]["PON"],
         exac= config["database_url"]["GRCh38"]["germline"]["ExAC"] if config["ref"]["build"]=='GRCh38' else config["database_url"]["GRCh37"]["germline"]["ExAC"],

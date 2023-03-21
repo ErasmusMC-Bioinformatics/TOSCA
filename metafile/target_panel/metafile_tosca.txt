@@ -1,3 +1,3 @@
 sample	platform	fq1	fq2
-subset_1	ILLUMINA	/data/eveline/ARCTIC_fastq_files/subset_end1.fastq.gz	/data/eveline/ARCTIC_fastq_files/subet_end2.fastq.gz
+subset_1	ILLUMINA	/data/eveline/ARCTIC_fastq_files/CPCT02020358T_AHTYNHBGX2_S2_end1.fastq.gz	/data/eveline/ARCTIC_fastq_files/CPCT02020358T_AHTYNHBGX2_S2_end2.fastq.gz
 

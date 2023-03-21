@@ -8,9 +8,9 @@ rule get_genome:
         release=config["ref"]["release"]
     log:
         outputdir + "logs/ensembl/get_genome.log"    
-    cache: True
+    cache: "omit-software"
     wrapper:
-        "0.78.0/bio/reference/ensembl-sequence"
+        "master/bio/reference/ensembl-sequence"  #0.78.0
 
 rule get_annotation:
     output:
@@ -20,7 +20,7 @@ rule get_annotation:
         release=config["ref"]["release"] if config["ref"]["release"]=='GRCh38' else 87,
         build=config["ref"]["build"],
         fmt="gtf"
-    cache: True  # save space and time with between workflow caching (see docs)
+    cache: "omit-software"  # save space and time with between workflow caching (see docs)
     wrapper:
         "v1.19.1/bio/reference/ensembl-annotation"
 
@@ -39,7 +39,7 @@ rule gtf:
 
 rule genome_dict:
     input:
-         expand("resources/reference_genome/{ref}/{species}.fasta",ref=config["ref"]["build"],species=config["ref"]["species"])
+         get_reference
     output:
          expand("resources/reference_genome/{ref}/{species}.dict",ref=config["ref"]["build"],species=config["ref"]["species"])
     conda:
@@ -67,7 +67,7 @@ rule star_index:
         
 rule bwa_index:
     input:
-        expand("resources/reference_genome/{ref}/{species}.fasta",ref=config["ref"]["build"],species=config["ref"]["species"])
+       get_reference
     output:
         expand("resources/reference_genome/{ref}/{species}.fasta.{bwa}", ref=config["ref"]["build"],species=config["ref"]["species"], bwa=["amb", "ann" ,"bwt", "pac", "sa"])	
     params:
@@ -77,13 +77,13 @@ rule bwa_index:
     resources:
         mem_mb=369000
     wrapper:
-        "0.78.0/bio/bwa/index"        
+        "v1.23.3/bio/bwa/index"        
 
 
 rule genome_faidx:
     input:
-         expand("resources/reference_genome/{ref}/{species}.fasta",ref=config["ref"]["build"],species=config["ref"]["species"]),
-         expand("resources/reference_genome/{ref}/{species}.fasta",ref=config["ref"]["build"],species=config["ref"]["species"],bwa=["amb", "ann" ,"bwt", "pac", "sa"])
+        get_reference
+        expand("resources/reference_genome/{ref}/{species}.fasta",ref=config["ref"]["build"],species=config["ref"]["species"],bwa=["amb", "ann" ,"bwt", "pac", "sa"])
     output:
          expand("resources/reference_genome/{ref}/{species}.fasta.fai",ref=config["ref"]["build"],species=config["ref"]["species"])
     cache: True
@@ -98,11 +98,13 @@ rule get_known_variation:
     output:
         vcf=temp(expand("resources/database/{ref}/variation.vcf.gz",ref=config["ref"]["build"]))
     params:
-        species=config["ref"]["species"],
+        species="homo_sapiens",
         build=config["ref"]["build"],
         release=config["ref"]["release"],
         type="all"
-    cache: True
+    log:
+        outputdir + "logs/ensembl/get_variation.log"  
+    cache: "omit-software"
     wrapper:
         "master/bio/reference/ensembl-variation" #0.78.0
 

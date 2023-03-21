@@ -3,7 +3,7 @@
 ############################################
 
 meta: metafile/target_panel/metafile_tosca.txt  #Path to metafile with RAW TUMOR samples (following columns are required: sample,platform,fq1/fq2 (tab separated))          
-output: /data/eveline/tosca_test_star_07_01_23 #Path to the OUTPUT directory 
+output: /data/eveline/tosca_test_working_setsample1_08_02_23 #Path to the OUTPUT directory 
 
 ############################################
 ## OPTIONAL (HIGHLY recommended for WES)
@@ -37,16 +37,16 @@ ref:
 ## ensembl species name
   species: homo_sapiens
 ## ensembl release
-  release: 104  # The most recent release of human genome is 104 (May 2021)
+  release: 108  # The most recent release of human genome is 10 (May 2022)
 ## genome build 
-  build: GRCh38 # GRCh38/GRCh37
+  build: GRCh37 # GRCh38/GRCh37
 ## snpEff annotation
-  snpeff_db: GRCh38.99
+  snpeff_db: GRCh37.75 # GRCh38.99/GRCh37.75
 ##
 ## Quality and target filtering
 filtering:
 ## Provide BED file of your targeted capture
-  restrict-regions: /data/eveline/my_TOSCA.bed
+  restrict-regions: /data/eveline/files_GRCh_37/genes.bed
 ## Minimum read depth to call a variant (100-250x suggested)   
   min_depth: 250
 ## Minimum variant allele frequency (5% suggested)  
@@ -57,7 +57,7 @@ database_url:
   GRCh38:
     germline:
       1000G: "http://ftp.ensembl.org/pub/current_variation/vcf/homo_sapiens/1000GENOMES-phase_3.vcf.gz"
-      ESP: "/data/eveline/ESP6500SI-V2-SSA137.GRCh38-liftover.snps_indels.vcf.tar.gz"
+      ESP: "/data/eveline/file_GRCh_38/ESP6500SI-V2-SSA137.GRCh38-liftover.snps_indels.vcf.tar.gz"
       ClinVar: "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/clinvar.vcf.gz"
       ExAC: resources/database/GRCh38/GRCh38.ExAC.vcf.gz
       PON: resources/pon/GRCh38/1000G_PON.vcf.gz
@@ -66,7 +66,7 @@ database_url:
   GRCh37:
     germline:
       1000G: "http://ftp.ensembl.org/pub/grch37/current/variation/vcf/homo_sapiens/1000GENOMES-phase_3.vcf.gz"
-      ESP: "/data/eveline/ESP6500SI-V2-SSA137.GRCh38-liftover.snps_indels.vcf.tar.gz"
+      ESP: "/data/eveline/file_GRCh_38/ESP6500SI-V2-SSA137.GRCh38-liftover.snps_indels.vcf.tar.gz"
       ClinVar: "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh37/clinvar.vcf.gz"
       ExAC: resources/database/GRCh37/GRCh37.ExAC.vcf.gz
       PON: resources/pon/GRCh37/1000G_PON.vcf.gz
