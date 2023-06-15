@@ -12,6 +12,16 @@ rule get_genome:
     wrapper:
         "master/bio/reference/ensembl-sequence"  #0.78.0
 
+rule sort_reference:
+    input:
+        expand("resources/reference_genome/{ref}/{species}.unsorted.fasta",ref=config["ref"]["build"],species=config["ref"]["species"])
+    output:            
+        expand("resources/reference_genome/{ref}/{species}.fasta",ref=config["ref"]["build"],species=config["ref"]["species"])
+    conda:
+        "../envs/seqkit.yaml"    
+    shell:
+        "seqkit sort -nN {input} -o {output}"        
+
 rule get_annotation:
     output:
         expand("resources/reference_genome/{ref}/{species}_annotation.gtf",ref=config["ref"]["build"],species=config["ref"]["species"])
@@ -45,6 +55,7 @@ rule genome_dict:
     conda:
         "../envs/samtools.yaml"     
     cache: True
+    priority: 9
     shell:
         "samtools dict {input} > {output} "
 
@@ -63,7 +74,7 @@ rule star_index:
         outputdir + "logs/star_index/star_index.log"
     cache: True
     wrapper:
-        "v1.19.0/bio/star/index"
+        "v1.23.3/bio/star/index"
         
 rule bwa_index:
     input:
@@ -82,14 +93,14 @@ rule bwa_index:
 
 rule genome_faidx:
     input:
-        get_reference
+        get_reference,
         expand("resources/reference_genome/{ref}/{species}.fasta",ref=config["ref"]["build"],species=config["ref"]["species"],bwa=["amb", "ann" ,"bwt", "pac", "sa"])
     output:
          expand("resources/reference_genome/{ref}/{species}.fasta.fai",ref=config["ref"]["build"],species=config["ref"]["species"])
     cache: True
     priority: 10
     wrapper:
-        "master/bio/samtools/faidx" #0.78.0
+        "v1.23.3/bio/samtools/faidx" #0.78.0
 
 rule get_known_variation:
     input:
@@ -105,8 +116,9 @@ rule get_known_variation:
     log:
         outputdir + "logs/ensembl/get_variation.log"  
     cache: "omit-software"
+    priority: 9
     wrapper:
-        "master/bio/reference/ensembl-variation" #0.78.0
+        "v1.23.3/bio/reference/ensembl-variation" #0.78.0
 
 rule remove_iupac_codes:
     input:

@@ -47,7 +47,7 @@ rule snpsift_annotate_ESP:
 rule snpsift_annotate_ExAC:
     input:
         call=outputdir + "variant/{sample}.filt.vcf",
-        database=config["database_url"]["GRCh38"]["germline"]["ExAC"]
+        database=config["database_url"]["GRCh37"]["germline"]["ExAC"]
     output:
         call=outputdir + "annotation/{sample}.ExAC.vcf"
     resources:

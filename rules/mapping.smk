@@ -33,13 +33,23 @@ rule map_reads:
         outputdir + "benchmarks/star/{sample}.star.benchmark.txt"
     params:
         # optional parameters
-        twopass="--twopassMode Basic",
-	    sorted="--outSAMtype BAM SortedByCoordinate",
+        twopass="--twopassMode Basic"
     threads: config["ncores"]
-    conda:
-        "../envs/staralign.yaml"
-    script:
-        "star.py"
+    wrapper:
+        "v1.23.3/bio/star/align"
+
+rule samtools_sort:
+    input:
+        outputdir + "mapped/{sample}.bam",
+    output:
+        outputdir + temp("mapped/{sample}.sorted.bam"),
+    log:
+        "{sample}.log",
+    params:
+        extra="-m 4G",
+    threads: 8
+    wrapper:
+        "v1.23.0/bio/samtools/sort"        
 
 rule add_read_groups:
     input:
@@ -49,7 +59,7 @@ rule add_read_groups:
     log:
         outputdir + "logs/picard/replace_rg/{sample}.log",
     params:
-        extra="--RGLB lib1 --RGPL illumina --RGPU {sample} --RGSM {sample}", """ If it works change too get_read_groups """"
+        extra="--RGLB lib1 --RGPL ILLUMINA --RGPU {sample} --RGSM {sample}",
     resources:
         mem_mb=1024,
     wrapper:
@@ -67,7 +77,7 @@ rule mark_duplicates:
     benchmark:
         outputdir + "benchmarks/picard/{sample}.picard.benchmark.txt"
     params:
-        extra="--REMOVE_DUPLICATES=true --OPTICAL_DUPLICATE_PIXEL_DISTANCE=100 --CREATE_INDEX=true --VALIDATION_STRINGENCY=LENIENT"
+        extra="--REMOVE_DUPLICATES=true"
     resources:
         mem_mb=4096    
     wrapper:

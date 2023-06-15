@@ -29,7 +29,7 @@ rule norm_map_reads:
         sort_order="coordinate"
     threads: config["ncores"]
     wrapper:
-        "0.78.0/bio/bwa/mem"
+        "master/bio/bwa/mem"
 
 rule norm_mark_duplicates:
     input:
